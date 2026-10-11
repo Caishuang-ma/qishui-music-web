@@ -72,7 +72,8 @@
       if (inputFrame) cancelAnimationFrame(inputFrame);
       inputFrame = 0;
       if (pointer?.dragging) {
-        position = pointer.originPosition - (pointer.lastX - pointer.originX) / pixelsPerScene;
+        const distance = pointer.axis === 'y' ? pointer.lastY - pointer.originY : pointer.lastX - pointer.originX;
+        position = pointer.originPosition - distance / pixelsPerScene;
       } else if (pendingWheel) {
         position += pendingWheel;
       }
@@ -173,12 +174,14 @@
       const multiplierY = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
       const x = event.deltaX * multiplierX;
       const y = event.deltaY * multiplierY;
-      if (!Number.isFinite(x) || Math.abs(x) <= 0.5 || Math.abs(x) <= Math.abs(y) * 1.1) return;
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      const delta = Math.abs(x) >= Math.abs(y) ? x : y;
+      if (Math.abs(delta) <= 0.5) return;
       event.preventDefault();
       if (pointer?.dragging) return;
       cancelAnimation();
       gallery.classList.add('is-scrubbing');
-      pendingWheel += x / pixelsPerScene;
+      pendingWheel += delta / pixelsPerScene;
       queueInput();
       clearWheelTimer();
       wheelStopTimer = window.setTimeout(() => {
@@ -196,8 +199,11 @@
         startX: event.clientX,
         startY: event.clientY,
         originX: event.clientX,
+        originY: event.clientY,
         originPosition: position,
         lastX: event.clientX,
+        lastY: event.clientY,
+        axis: null,
         dragging: false
       };
     });
@@ -208,15 +214,12 @@
       const x = event.clientX - pointer.startX;
       const y = event.clientY - pointer.startY;
       if (!pointer.dragging) {
-        if (Math.abs(y) >= dragThreshold && Math.abs(y) >= Math.abs(x)) {
-          releasePointer();
-          return;
-        }
-        if (Math.abs(x) < dragThreshold || Math.abs(x) <= Math.abs(y) * 1.1) return;
+        if (Math.max(Math.abs(x), Math.abs(y)) < dragThreshold) return;
         flushInput();
         cancelAnimation();
         clearWheelTimer();
         pointer.originPosition = position;
+        pointer.axis = Math.abs(x) >= Math.abs(y) ? 'x' : 'y';
         pointer.dragging = true;
         gallery.classList.add('is-scrubbing');
         try {
@@ -226,6 +229,7 @@
         }
       }
       pointer.lastX = event.clientX;
+      pointer.lastY = event.clientY;
       event.preventDefault();
       queueInput();
     }, { passive: false });
@@ -234,7 +238,10 @@
       if (!pointer || pointer.id !== event.pointerId) return;
       const dragged = pointer.dragging;
       if (dragged) {
-        if (event.type === 'pointerup' && typeof event.clientX === 'number') pointer.lastX = event.clientX;
+        if (event.type === 'pointerup') {
+          if (typeof event.clientX === 'number') pointer.lastX = event.clientX;
+          if (typeof event.clientY === 'number') pointer.lastY = event.clientY;
+        }
         flushInput();
         suppressDraggedClick();
       }

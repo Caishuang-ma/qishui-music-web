@@ -96,7 +96,7 @@
           <p class="scene-status" data-scene-status role="status" aria-live="polite">把早晚的路，走成自己的节奏。</p>
         </div>
         <div class="scene-stage reveal-scale">
-          <div id="scene-gallery" class="scene-gallery" role="group" aria-label="环形场景选择器，可横向滑动、拖动或使用左右方向键切换">
+          <div id="scene-gallery" class="scene-gallery" role="group" aria-label="环形场景选择器，可上下或左右滑动、拖动或使用左右方向键切换">
             <div class="scene-carousel">
               <div class="scene-position" style="--card-angle: 0deg; --card-image: url(assets/commute.jpg)">
                 <button class="scene-card is-selected" type="button" data-artwork="commute" data-scene="commute" data-active="true" data-description="把早晚的路，走成自己的节奏。" aria-pressed="true" aria-label="选择通勤路上" data-spotlight>
@@ -148,7 +148,7 @@
               </div>
             </div>
           </div>
-          <div class="scene-stage-footer"><span class="stage-sound" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>心情不同，音乐随行</span><span class="stage-hint">双指左右滑动 · 拖动切换</span><div class="scene-arrows"><button class="scene-arrow" type="button" data-scene-step="-1" aria-label="上一个场景"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button><button class="scene-arrow" type="button" data-scene-step="1" aria-label="下一个场景"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div></div>
+          <div class="scene-stage-footer"><span class="stage-sound" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>心情不同，音乐随行</span><span class="stage-hint">上下 / 左右滑动 · 拖动切换</span><div class="scene-arrows"><button class="scene-arrow" type="button" data-scene-step="-1" aria-label="上一个场景"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button><button class="scene-arrow" type="button" data-scene-step="1" aria-label="下一个场景"><svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div></div>
         </div>
       </div>
     </section>
@@ -166,21 +166,19 @@
               <button class="mode-button" type="button" data-mode="fresh" data-title="下一首，新的心动。" data-copy="打开耳朵，给还没遇见的好音乐一个机会。" data-note="新鲜模式" aria-pressed="false">新鲜模式</button>
             </div>
             <div class="mode-feedback" role="status" aria-live="polite" aria-atomic="true"><h3 data-mode-title>刚刚好，正合拍。</h3><p data-mode-copy>让今天的心情，遇见此刻想听的旋律。</p></div>
-            <div class="song-preview reveal">
-              <button class="song-play" type="button" data-play-song aria-label="播放 Running Up That Hill 官方MV" aria-haspopup="dialog" aria-controls="song-dialog"><svg class="icon" aria-hidden="true"><use href="#icon-play"/></svg></button>
-              <div class="song-info"><strong>Running Up That Hill</strong><span>Kate Bush · 官方 MV</span></div>
-              <span class="song-invitation">听听这首</span>
-            </div>
           </div>
-          <div class="mode-stage reveal-scale" data-mode-stage data-mode="default" aria-hidden="true">
-            <div class="mode-orbit orbit-one"></div><div class="mode-orbit orbit-two"></div>
-            <div class="vinyl-wrap"><div class="vinyl"><div class="vinyl-label"><svg class="icon"><use href="#icon-wave"/></svg><span>随心听</span></div><span class="vinyl-center"></span></div></div>
-            <div class="album-sleeve">
+          <div class="mode-stage reveal-scale" data-mode-stage data-mode="default">
+            <div class="mode-orbit orbit-one" aria-hidden="true"></div><div class="mode-orbit orbit-two" aria-hidden="true"></div>
+            <div class="vinyl-wrap">
+              <div class="vinyl" aria-hidden="true"><div class="vinyl-label"></div><span class="vinyl-etch">QISHUI · MUSIC</span></div>
+              <button class="vinyl-play" type="button" data-play-song aria-label="播放 Running Up That Hill 官方MV" aria-haspopup="dialog" aria-controls="song-dialog" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#icon-play"/></svg><span>播放音乐</span></button>
+            </div>
+            <div class="album-sleeve" aria-hidden="true">
               <div class="album-photo"><img class="cover-default" src="assets/seaside.jpg" alt="" width="1200" height="675" loading="lazy"><img class="cover-familiar" src="assets/night.jpg" alt="" width="1300" height="867" loading="lazy"><img class="cover-fresh" src="assets/travel.jpg" alt="" width="1000" height="1250" loading="lazy"></div>
               <span class="album-brand">汽水音乐</span><span class="album-title">听见<br>心动。</span><span class="album-mode" data-mode-note>默认模式</span><span class="album-wave"><svg class="icon"><use href="#icon-wave"/></svg></span>
             </div>
-            <div class="favorite-bubble"><svg class="icon"><use href="#icon-heart"/></svg><span>喜欢，就留下</span></div>
-            <span class="orbit-caption">让喜欢，响起来。</span>
+            <div class="favorite-bubble" aria-hidden="true"><svg class="icon"><use href="#icon-heart"/></svg><span>喜欢，就留下</span></div>
+            <div class="record-info"><strong>Running Up That Hill</strong><span>Kate Bush · 官方 MV</span></div>
           </div>
         </div>
         <div class="feature-row">

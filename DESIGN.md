@@ -11,8 +11,8 @@
 | 屏幕 / 锚点 | 主信息 | 最终构图与交互 |
 |---|---|---|
 | 01 / #home | 汽水音乐，让喜欢响起来 | 巨型品牌字、非对称短句、底部官方下载 CTA；文字遮罩入场，全局声场背景贯穿后续区域 |
-| 02 / #discover | 每一刻，都有你的节奏 | 宣言带、八个场景标签、倾斜三维摄影圆环；双指横向滑动、鼠标拖动、左右按钮与键盘切换 |
-| 03 / #features | 喜欢，不止一种方式 | 默认 / 熟悉 / 新鲜三模式，原生唱片、摄影封套与收藏气泡；歌曲入口点击打开完整官方 MV 播放弹窗 |
+| 02 / #discover | 每一刻，都有你的节奏 | 宣言带、八个场景标签、倾斜三维摄影圆环；双指上下 / 左右滑动、单一主指针上下 / 左右拖动、左右按钮与键盘切换 |
+| 03 / #features | 喜欢，不止一种方式 | 默认 / 熟悉 / 新鲜三模式，原生唱片、摄影封套与收藏气泡；唱片中心唯一播放按钮打开完整官方 MV 弹窗，右上方显示歌曲信息 |
 | 04 / #download | 把音乐，带进生活 | 延续黑底与荧光绿标题；立体品牌物体、轨道线、三张生活摄影、绿色下载票券与页脚声波彩蛋 |
 
 所有屏底页数标记已删除，第四屏保持黑底。第三屏以独立模式视觉与官方视频体验表达产品能力，不展示桌面产品截图。用户截图只作为真实产品功能、场景和听歌模式的内容依据。
@@ -127,7 +127,7 @@ button:focus-visible,a:focus-visible { outline: 2px solid var(--accent); outline
 
 ### 八场景圆环与选择控件
 
-外层 .scene-position 承担45°等分位置，内部 .scene-card 独立执行悬停缩放，避免定位与反馈互相覆盖。标签与卡片同步 aria-pressed，当前卡片使用 roving tabindex。选中外框1.025倍、照片1.12倍；悬停外框1.07倍、照片退到1倍、圆角16→32px。后排卡片通过独立背面摄影保持视觉存在。
+外层 .scene-position 承担45°等分位置，内部 .scene-card 独立执行悬停缩放，避免定位与反馈互相覆盖。标签与卡片同步 aria-pressed，当前卡片使用 roving tabindex。选中外框1.025倍、照片1.12倍；悬停外框1.07倍、照片退到1倍、圆角16→32px。后排卡片通过独立背面摄影保持视觉存在。画廊内部 touch-action:none，支持上下与左右手势；画廊外保持正常页面滚动。
 
 ```css
 .scene-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; max-width: 470px; }
@@ -139,7 +139,7 @@ button:focus-visible,a:focus-visible { outline: 2px solid var(--accent); outline
 .tag:disabled { opacity: .45; cursor: default; }
 .scene-status { margin-top: 22px; font-size: 15px; min-height: 54px; max-width: 28ch; }
 .scene-stage { min-width: 0; }
-.scene-gallery { position: relative; height: 520px; width: 100%; perspective: 1800px; perspective-origin: 50% 45%; --ring-radius: clamp(250px,calc(25vw - 40px),320px); --card-width: clamp(140px,11.4vw,164px); --card-height: 248px; cursor: grab; touch-action: pan-y; user-select: none; }
+.scene-gallery { position: relative; height: 520px; width: 100%; perspective: 1800px; perspective-origin: 50% 45%; --ring-radius: clamp(250px,calc(25vw - 40px),320px); --card-width: clamp(140px,11.4vw,164px); --card-height: 248px; cursor: grab; touch-action: none; user-select: none; }
 .scene-carousel { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateZ(calc(-5deg + var(--gallery-tilt,0deg))) rotateX(calc(-23deg + var(--pointer-y,0) * 2deg)) rotateY(calc(var(--carousel-position,0) * -45deg)); }
 .scene-gallery.is-scrubbing,.scene-gallery.is-scrubbing .scene-card { cursor: grabbing; }
 .scene-gallery.is-scrubbing .scene-carousel { transition: none; }
@@ -178,7 +178,11 @@ button:focus-visible,a:focus-visible { outline: 2px solid var(--accent); outline
 
 ### 听歌模式与唱片视觉
 
-默认 / 熟悉 / 新鲜切换同步标题、说明、模式标签、封套照片、唱片标签色、心形色和封套角度。反馈区 role=status；唱片只在第三屏可见且页面在前台时旋转。唱片封套没有伪播放按钮，真正的歌曲播放入口独立呈现。
+默认 / 熟悉 / 新鲜切换同步标题、说明、模式标签、封套照片、唱片标签色、心形色和封套角度。反馈区 role=status；唱片只在第三屏可见且页面在前台时旋转。
+
+唯一 data-play-song 按钮 .vinyl-play 为112px圆形，居中固定于 .vinyl-wrap，与旋转的 .vinyl 是兄弟层，因此按钮文字和图标不随唱片旋转。它保留清晰的 hover、active、focus 与 disabled 状态，背景跟随模式色。歌曲名与 Kate Bush · 官方 MV 信息放在舞台右上方 .record-info；左侧只有模式选择与反馈，不再放独立歌曲条。
+
+.mode-stage 保留在无障碍树中；轨道、旋转唱片、封套、收藏气泡等装饰子层各自 aria-hidden=true，不能把整个舞台隐藏而导致播放按钮不可访问。
 
 ```css
 .mode-layout { display: grid; grid-template-columns: 5fr 7fr; gap: 48px; align-items: center; }
@@ -213,7 +217,14 @@ button:focus-visible,a:focus-visible { outline: 2px solid var(--accent); outline
 .vinyl-label { width: 112px; height: 112px; border-radius: 50%; background: var(--mode-accent); color: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; transition: background .7s; }
 .vinyl-label span { font-size: 12px; font-weight: 600; }
 .vinyl-label .icon { width: 36px; height: 36px; }
-.vinyl-center { width: 9px; height: 9px; border-radius: 50%; background: var(--bg); position: absolute; inset: calc(50% - 4.5px); }
+.vinyl-etch { position: absolute; top: 26px; left: 50%; translate: -50% 0; color: var(--text-tertiary); font: 500 10px/1.7 var(--font-latin); letter-spacing: .12em; white-space: nowrap; }
+.vinyl-play { position: absolute; z-index: 3; left: calc(50% - 56px); top: calc(50% - 56px); width: 112px; height: 112px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 0; border: 1px solid rgba(var(--ink-rgb),.15); border-radius: 50%; background: var(--mode-accent); color: var(--ink); cursor: pointer; transition: background .3s,transform .25s,border-color .25s; }
+.vinyl-play .icon { width: 30px; height: 30px; margin-left: 4px; fill: currentColor; stroke: none; }
+.vinyl-play span { font-size: 12px; font-weight: 700; line-height: 1.7; }
+.vinyl-play:hover { background: var(--accent-hover); transform: scale(1.07); border-color: var(--accent-hover); }
+.vinyl-play:active { background: var(--accent-active); transform: scale(.97); }
+.vinyl-play:focus-visible { outline: 3px solid var(--text); outline-offset: 7px; }
+.vinyl-play:disabled,.vinyl-play[aria-disabled='true'] { opacity: .45; cursor: default; transform: none; }
 .album-sleeve { position: absolute; top: 80px; left: 6%; width: 300px; height: 348px; border-radius: 16px; overflow: hidden; border: 1px solid rgba(var(--text-rgb),.25); transform: rotate(-9deg) rotateY(calc(var(--pointer-x,0) * 7deg)) rotateX(calc(var(--pointer-y,0) * -5deg)); box-shadow: var(--shadow-product); background: var(--surface-alt); transition: transform .8s var(--ease),border-radius .8s; }
 .album-photo { position: absolute; inset: 0; }
 .album-photo img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; opacity: 0; transform: scale(1.1); transition: opacity .8s,transform 1.2s var(--ease); }
@@ -230,24 +241,18 @@ button:focus-visible,a:focus-visible { outline: 2px solid var(--accent); outline
 .favorite-bubble { translate: calc(var(--pointer-x,0) * -16px) calc(var(--pointer-y,0) * -12px); transition: translate .4s ease-out; position: absolute; right: 8%; bottom: 65px; display: flex; align-items: center; gap: 12px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-card); transform: rotate(6deg); color: var(--text); }
 .favorite-bubble .icon { width: 26px; height: 26px; fill: var(--mode-accent); stroke: var(--mode-accent); transition: fill .7s,stroke .7s; }
 .favorite-bubble span { font-size: 15px; }
-.orbit-caption { position: absolute; right: 5%; top: 27px; font-size: 13px; color: var(--text-tertiary); }
+.record-info { position: absolute; right: 5%; top: 18px; display: flex; flex-direction: column; gap: 4px; text-align: right; }
+.record-info strong { font: 600 17px/1.7 var(--font-latin); letter-spacing: 0; color: var(--text); }
+.record-info span { font-size: 13px; color: var(--text-tertiary); }
 ```
 
 ### 歌曲入口与官方 MV 弹窗
 
-54px圆形播放按钮打开原生 dialog；弹窗宽度不超过860px，完整可见16:9视频。打开后动态插入 YouTube iframe，并请求 autoplay；用户可使用播放器原生控制。原生模态框管理焦点与 Esc 关闭；关闭按钮或点击框外也能关闭。关闭后移除 iframe 以停止播放，恢复页面滚动并把焦点还给播放按钮。播放器状态区使用 role=status；12秒未加载时显示官方频道备用链接提示。默认页面不插入或预加载视频 iframe。
+唱片中心112px播放按钮打开原生 dialog；弹窗宽度不超过860px，完整可见16:9视频。打开后动态插入 YouTube iframe，并请求 autoplay；用户可使用播放器原生控制。播放按钮使用 aria-haspopup=dialog、aria-controls=song-dialog；aria-expanded 在打开时为true、关闭时恢复false。
+
+原生模态框管理焦点与 Esc 关闭；关闭按钮或点击框外也能关闭。关闭后移除 iframe 以停止播放，恢复页面滚动并把焦点还给唱片中心播放按钮。播放器状态区使用 role=status；12秒未加载时显示官方频道备用链接提示。默认页面不插入或预加载视频 iframe。
 
 ```css
-.song-preview { display: flex; gap: 16px; align-items: center; max-width: 460px; margin-top: 12px; padding-top: 18px; border-top: 1px solid var(--border); }
-.song-play { display: grid; place-items: center; width: 54px; height: 54px; flex: 0 0 54px; border: 1px solid var(--accent); border-radius: 50%; color: var(--ink); background: var(--accent); cursor: pointer; transition: background .2s,transform .2s; }
-.song-play .icon { width: 22px; height: 22px; fill: currentColor; stroke: none; margin-left: 3px; }
-.song-play:hover { background: var(--accent-hover); transform: scale(1.06); }
-.song-play:active { background: var(--accent-active); transform: scale(.96); }
-.song-play:disabled { opacity: .45; cursor: default; }
-.song-info { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
-.song-info strong { font: 600 17px/1.5 var(--font-latin); letter-spacing: 0; }
-.song-info span { font-size: 13px; color: var(--text-tertiary); }
-.song-invitation { margin-left: auto; font-size: 13px; white-space: nowrap; color: var(--accent); }
 .player-open { overflow: hidden; }
 .song-dialog { width: min(860px,calc(100vw - 80px)); max-height: calc(100vh - 80px); padding: 24px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg); color: var(--text); box-shadow: var(--shadow-product); }
 .song-dialog::backdrop { background: rgba(var(--bg-rgb),.88); }
@@ -371,16 +376,16 @@ CSS + 原生JavaScript；页面、背景与模式交互由 script.js 管理，�
 ### 圆环连续输入与吸附
 
 - .scene-carousel 读取连续数值 --carousel-position，最终 rotateY = position × −45°，不靠离散CSS transition追手势。
-- 只在场景画廊内处理明确横向wheel：|deltaX| > 0.5 且超过 |deltaY| 的1.1倍；横向输入会阻止该次默认动作，纵向滚动继续滚动页面。Ctrl+wheel保留浏览器行为。
-- 横向200px为一格；事件按rAF合并，停手140ms后吸附到最近整数位置。
-- 鼠标或指针横向拖动超过8px且方向明确才开始旋转；使用pointer capture，拖动200px一格。垂直手势退出拖动判定。松手、取消或捕获丢失时吸附；拖动后的合成点击被抑制，避免误选照片。
+- 仅在场景画廊内部处理上下或左右wheel，先按deltaMode换算像素，再取绝对值较大的主轴delta；相等时使用X轴，不叠加X/Y。主轴幅度>0.5px时阻止该次画廊默认滚动并转动圆环；Ctrl+wheel保留浏览器行为，画廊之外正常滚动页面。
+- 上下与左右输入均200px为一格；事件按rAF合并，停手140ms后吸附到最近整数位置。
+- 仅接受左键或单一primary pointer；任一轴位移达到8px才开始拖动，并锁定绝对位移较大的X或Y主轴，整次拖动不切轴、不叠加。使用pointer capture，主轴拖动200px为一格。画廊touch-action:none并阻止原生图片拖放。松手、取消或捕获丢失时吸附；拖动后的合成点击被抑制，避免误选照片。
 - 场景标签、照片点击走最短环绕路径；左右按钮每次一格并环绕，左右键同样操作；Home/End选择第一/最后场景，焦点留在新选卡片，防止自动滚动。
 - 吸附采用cubic ease-out，持续时间 min(520ms,260ms + 格数距离 × 70ms)。减少动态或切后台时直接落到目标位置。
 - 圆环在滚动中轻倾斜±6°，指针仅微调X轴最多±2°；hover不改变选择，不把卡片自动移动到指针脚下。
 
 ### 模式、背景、收尾与媒体
 
-模式舞台指针旋转封套最多±7/5°；唱片位移±14/10px，收藏气泡反向±16/12px；唱片24s旋转，气泡6s轻浮动。全局背景指针位移最多±20/14px，持续18s呼吸。第四屏品牌物体在可见时7s漂浮，指针位移±10/7px；收尾声波彩蛋仅点击后短暂放大并显示「好，按你的节奏来。」
+模式舞台指针旋转封套最多±7/5°；唱片容器位移±14/10px，收藏气泡反向±16/12px；唱片24s旋转、中心播放按钮方向固定，气泡6s轻浮动。全局背景指针位移最多±20/14px，持续18s呼吸。第四屏品牌物体在可见时7s漂浮，指针位移±10/7px；收尾声波彩蛋仅点击后短暂放大并显示「好，按你的节奏来。」
 
 所有持续装饰离开所属视口或切后台暂停；pointermove与scroll用rAF节流。背景与悬浮效果尊重prefers-reduced-motion。歌曲MV仅用户点击后启动嵌入播放；视频控制交由可见YouTube原生界面，关闭dialog即移除iframe，不把装饰唱片转动当作真实播放状态。
 
@@ -431,8 +436,8 @@ CSS + 原生JavaScript；页面、背景与模式交互由 script.js 管理，�
 - 连续背景将品牌、场景、模式和下载区连接起来。
 - 八场景以真实摄影呈现，通勤使用明确的地铁旅程。
 - 圆环输入跟手，停手吸附，最短环绕；键盘和按钮可完成同一选择。
-- 第三屏用模式视觉与主动打开的官方MV体验表达产品能力。
-- 视频完整可见、原生控制可用、关闭移除iframe并恢复焦点。
+- 第三屏用模式视觉与唱片中心的唯一官方MV播放入口表达产品能力。
+- 视频完整可见、原生控制可用、关闭移除iframe并恢复唱片中心按钮焦点与aria-expanded状态。
 - 官方下载统一接到核实的官方页面，票券文案明确可点击。
 - 中文正文15～17px、行高1.75；标题字体与焦点状态保持清晰。
 - 屏外与后台暂停持续装饰，尊重减少动态设置。
@@ -449,7 +454,7 @@ CSS + 原生JavaScript；页面、背景与模式交互由 script.js 管理，�
 - 不将装饰唱片转动、声波或收藏气泡当作真实播放器状态。
 - 不使用会员价格、用户量、评价或曲库量等未核实承诺。
 - 不对运动元素加blur，不覆盖大面积backdrop-filter。
-- 不拦截普通纵向滚动，不增加长pin，不用body裁切掩盖横向布局错误。
+- 不在场景画廊外截获wheel或拖动，不增加长pin，不用body裁切掩盖横向布局错误。
 - 不把非交互生活摄影与品牌物体伪装成额外操作入口。
 
 ## 9. Responsive Behavior

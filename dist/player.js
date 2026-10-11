@@ -30,6 +30,7 @@
       }, { once: true });
       frame.replaceChildren(iframe);
       dialog.showModal();
+      button.setAttribute('aria-expanded', 'true');
       document.documentElement.classList.add('player-open');
       loadTimer = window.setTimeout(() => {
         status.textContent = '播放器加载较慢，可在官方频道打开。';
@@ -46,6 +47,7 @@
     clearTimeout(loadTimer);
     frame.replaceChildren();
     document.documentElement.classList.remove('player-open');
+    trigger?.setAttribute('aria-expanded', 'false');
     trigger?.focus({ preventScroll: true });
   });
 })();
