@@ -1,13 +1,11 @@
 # 汽水音乐宣传落地页
 
-按已确认的 DESIGN.md 制作，一个页面包含品牌、听歌场景、产品功能及下载四个主要区域。
+电脑端单页，共品牌、听歌场景、听歌模式及下载四屏，无二级页面。按用户最新要求，只针对电脑端设计与验收，基准画布1440×900，支持1024px以上桌面窗口。
 
-打开 dist/index.html，或在项目目录运行静态 HTTP 服务器并以 dist 为根目录。无需安装依赖或编译。
+静态HTML/CSS/JavaScript，打开dist/index.html或以dist为根目录启动静态HTTP服务，无需安装依赖或编译。
 
-使用原生 HTML/CSS/JavaScript，包含标题入场、可见时运行的声波与宣言带、场景切换、轻视差、按钮微磁吸及键盘焦点。减少动态效果设置和无 JavaScript 环境下内容保持可读。
+包含贯穿全页的流动曲线背景与指针视差、巨型标题入场、宣言带、八场景3D摄影圆环、悬停放大/圆角/照片缩放、默认/熟悉/新鲜三种模式切换、唱片旋转、封套视差与收藏气泡浮动。没有页数提醒或产品截图展示。
 
-下载按钮指向汽水音乐官网 https://music.douyin.com/qishui。本站不播放歌曲，会员价格不作为本页营销承诺。
+下载指向 https://music.douyin.com/qishui 。本站不播放歌曲，不把会员价格作为营销承诺。减少动态效果下信息完整、交互仍可用；后台和屏外暂停持续动效。
 
-产品截图与小图标由用户提供。摄影素材来源记录在 assets-sources.md。动效为本项目原生实现，未复制 reactbits/vue-bits 源码。
-
-设计参考：https://lenis.dev/。保留巨幅字体、非对称留白与底部行动区；调整为汽水音乐品牌绿、中文字体及四屏 L2 交互。
+设计参考 https://lenis.dev/ 与 https://pmndrs.github.io/examples/cards-with-border-radius/ 。圆环用原生CSS3D近似透视与悬停语言，未复制WebGL源码。新截图提供真实产品模式和场景分类依据。摄影出处见assets-sources.md；参考审计见reference-card-audit.md；最终验收见AUDIT.md。
