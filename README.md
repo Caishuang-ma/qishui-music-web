@@ -2,7 +2,9 @@
 
 ## GitHub Pages
 
-仓库名称：`qishui-music-web`。工作流 `.github/workflows/pages.yml` 在推送到 `main` 或手动运行时发布 `dist/`，保留当前电脑端页面与全部交互。首次部署时在仓库 Settings → Pages 将 Source 选择为 GitHub Actions。
+仓库：[qishui-music-web](https://github.com/Caishuang-ma/qishui-music-web)。访问：[GitHub Pages](https://caishuang-ma.github.io/qishui-music-web/)。
+
+工作流 `.github/workflows/pages.yml` 在推送到 `main` 或手动运行时发布 `dist/`，保留当前电脑端页面与全部交互。仓库 Pages 的发布来源为 GitHub Actions。
 
 部署采用 [GitHub 官方 Pages 工作流](https://docs.github.com/en/get-started/start-your-journey/deploying-your-website-automatically)。网页使用相对资源路径，支持 `/qishui-music-web/` 项目路径，无需构建或安装依赖。
 
