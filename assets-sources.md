@@ -14,3 +14,9 @@
 - 官方白色品牌矢量标识：https://lf-luna.qishui.com/obj/music-luna-fe/luna/home/1.0.0.274/assets/logo-0921b993.svg 。
 
 八张摄影用于听歌场景表达，不代表歌曲、歌手或实际歌单封面。所有新下载摄影已逐张查看，保留真实画面；用户听歌模式截图只作场景分类参考，不作为照片使用。品牌资源来自 https://music.douyin.com/qishui 页面公开引用。
+
+## 音乐播放来源
+
+Kate Bush — Running Up That Hill，官方频道 KateBushMusic 发布的完整 Music Video：[官方视频](https://www.youtube.com/watch?v=wp43OdtAAkM)。videoId wp43OdtAAkM，channelId UC31hY7kg7CUOBpdyn9d_gYA。官方 oEmbed 返回200，playableInEmbed=true；2026-10-11在真实浏览器及本地页面内验证可播放，主片媒体时长295.901秒。
+
+页面按[YouTube 官方嵌入规范](https://developers.google.com/youtube/player_parameters)使用可见16:9播放器和标准控制栏，用户点击后才加载；没有下载、音轨抽离、缓存或重新上传。音乐与视频由官方平台提供，署名保留在播放器和页面中。第四屏复用既有夜晚、旅行、海边摄影，没有新增图库素材。

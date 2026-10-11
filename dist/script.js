@@ -10,7 +10,7 @@
     const navLinks = Array.from(document.querySelectorAll('.nav a[href^="#"]'));
     const revealElements = Array.from(document.querySelectorAll('.reveal, .reveal-scale, .reveal-body'));
     const siteAtmosphere = document.querySelector('.site-atmosphere');
-    const atmosphereElements = Array.from(document.querySelectorAll('.site-atmosphere, .hero-atmosphere, .marquee-window'));
+    const atmosphereElements = Array.from(document.querySelectorAll('.site-atmosphere, .hero-atmosphere, .marquee-window, .download-art'));
     const parallaxElements = Array.from(document.querySelectorAll('.parallax-layer')).slice(0, 3);
     const sceneGallery = document.querySelector('#scene-gallery.scene-gallery');
     const features = document.querySelector('#features');
@@ -179,7 +179,7 @@
       pointerControls.push({ reset });
     });
 
-    document.querySelectorAll('.scene-stage, .mode-stage').forEach(stage => {
+    document.querySelectorAll('.scene-stage, .mode-stage, .download-art').forEach(stage => {
       let stageFrame = 0;
       let coordinates = null;
 
@@ -250,60 +250,6 @@
       window.addEventListener('blur', reset);
       pointerControls.push({ reset });
     }
-
-    const sceneButtons = Array.from(document.querySelectorAll('button[data-scene]'));
-    const sceneCards = Array.from(document.querySelectorAll('button.scene-card[data-artwork][data-scene]'));
-    const sceneOrder = Array.from(new Set((sceneCards.length ? sceneCards : sceneButtons).map(button => button.dataset.scene)));
-    const sceneStatus = document.querySelector('[data-scene-status]');
-    const sceneProgress = document.querySelector('.scene-progress');
-    const sceneProgressFill = document.querySelector('.scene-progress-fill');
-    let selectedScene = '';
-    if (sceneGallery && !sceneGallery.hasAttribute('role')) sceneGallery.setAttribute('role', 'group');
-    if (sceneStatus) {
-      sceneStatus.setAttribute('role', 'status');
-      sceneStatus.setAttribute('aria-live', 'polite');
-      sceneStatus.setAttribute('aria-atomic', 'true');
-    }
-
-    function selectScene(button) {
-      if (!button || button.disabled || button.getAttribute('aria-disabled') === 'true') return;
-      const scene = button.dataset.scene;
-      const index = sceneOrder.indexOf(scene);
-      if (index < 0) return;
-      selectedScene = scene;
-      sceneButtons.forEach(candidate => candidate.setAttribute('aria-pressed', String(candidate.dataset.scene === scene)));
-      sceneCards.forEach(card => {
-        const selected = card.dataset.scene === scene;
-        card.dataset.active = String(selected);
-        card.classList.toggle('is-selected', selected);
-        card.tabIndex = selected ? 0 : -1;
-      });
-      const description = button.dataset.description || sceneButtons.find(candidate => candidate.dataset.scene === scene && candidate.dataset.description)?.dataset.description;
-      if (sceneStatus && description) sceneStatus.textContent = description;
-      sceneGallery?.style.setProperty('--active-scene', String(index));
-      sceneProgress?.style.setProperty('--scene', String(index));
-      sceneProgressFill?.style.setProperty('--scene', String(index));
-      queuePageUpdate();
-    }
-
-    sceneButtons.forEach(button => button.addEventListener('click', () => selectScene(button)));
-    selectScene(sceneButtons.find(button => button.getAttribute('aria-pressed') === 'true') || sceneButtons[0]);
-
-    sceneGallery?.addEventListener('keydown', event => {
-      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-      const available = sceneCards.filter(card => !card.disabled && card.getAttribute('aria-disabled') !== 'true');
-      if (!available.length) return;
-      event.preventDefault();
-      const focusedCard = event.target instanceof Element ? event.target.closest('button.scene-card[data-scene]') : null;
-      let index = focusedCard ? available.indexOf(focusedCard) : available.findIndex(card => card.dataset.scene === selectedScene);
-      if (index < 0) index = 0;
-      if (event.key === 'Home') index = 0;
-      else if (event.key === 'End') index = available.length - 1;
-      else index = (index + (event.key === 'ArrowRight' ? 1 : -1) + available.length) % available.length;
-      selectScene(available[index]);
-      available[index].focus({ preventScroll: true });
-    });
 
     const modeButtons = Array.from(document.querySelectorAll('button[data-mode]'));
     const modeTitle = document.querySelector('[data-mode-title]');
