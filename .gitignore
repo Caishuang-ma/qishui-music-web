@@ -1,0 +1,6 @@
+.DS_Store
+*.tar.gz
+*.log
+node_modules/
+.openai/local-state/
+qa/
