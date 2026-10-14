@@ -6,7 +6,7 @@
 
 **Style**：Dark Editorial / Music Poster。黑底、荧光绿、巨型中文品牌字、轻导航、真实摄影与三维层次。全页是一张连续呼吸的音乐海报。
 
-**Interaction Tier**：沿用用户选定的 L2，按用户最新要求强化电脑端三维与手势反馈。使用 CSS、原生 JavaScript、IntersectionObserver 与 requestAnimationFrame，无新增动画库或 WebGL 依赖。
+**Interaction Tier**：沿用用户选定的 L2，按用户最新要求强化电脑端三维与手势反馈。页面主体使用 CSS、原生 JavaScript、IntersectionObserver 与 requestAnimationFrame。开场易拉罐是唯一例外：桌面端首次进入用 Three.js（CDN ESM，无构建）播放约 3 秒的拉环开启，然后交还给本页标题。减少动态或窄于 1024px 时跳过开场。
 
 | 屏幕 / 锚点 | 主信息 | 最终构图与交互 |
 |---|---|---|
@@ -362,7 +362,7 @@ button:focus-visible,a:focus-visible { outline: 2px solid var(--accent); outline
 
 ## 7. Animation & Interaction
 
-CSS + 原生JavaScript；页面、背景与模式交互由 script.js 管理，连续圆环由 scenes.js 管理，官方MV由 player.js 管理。无新增第三方动画运行库。
+CSS + 原生JavaScript；页面、背景与模式交互由 script.js 管理，连续圆环由 scenes.js 管理，官方MV由 player.js 管理，开场易拉罐由 splash.js 通过 CDN 上的 Three.js 播放。除此之外无动画运行库，也无构建步骤。全局声场不再使用 difference 混合，避免荧光曲线压过「汽水音乐」标题；指针跟随和滚动视差幅度已减弱。开场期间声场与导航让位给易拉罐。
 
 | L2动效类别 | 最终实现 | 参数 |
 |---|---|---|

@@ -12,11 +12,45 @@
   <meta property="og:url" content="https://qishui-music-huayu.tarteagle.chatgpt.site">
   <link rel="icon" href="assets/brand-icon.png" type="image/png">
   <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var play = window.matchMedia('(min-width: 1024px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!play) {
+        root.classList.add('page-settled');
+        return;
+      }
+      root.classList.add('splash-pending', 'splash-active');
+      window.setTimeout(function () {
+        if (root.classList.contains('splash-booted')) return;
+        root.classList.remove('splash-pending', 'splash-active');
+        root.classList.add('page-settled');
+      }, 4000);
+    })();
+  </script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="splash.js"></script>
   <script src="script.js" defer></script>
   <script src="scenes.js" defer></script>
   <script src="player.js" defer></script>
 </head>
 <body>
+  <!-- Opening can: dist/assets/soda-can.glb, CC0 unbranded aluminum can.
+       Sketchfab Yanez Designs "Soda Cans" needs a login, so it is not the file in use.
+       If that model replaces this one, credit Yanez Designs. -->
+  <div class="bottle-splash" id="bottle-splash" role="region" aria-label="开场动画">
+    <canvas class="bottle-splash-canvas" aria-hidden="true"></canvas>
+    <p class="bottle-splash-hint">点击、滚动或按 Esc 跳过</p>
+    <button class="bottle-splash-skip" type="button">跳过</button>
+  </div>
   <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
     <symbol id="icon-diagonal" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></symbol>
@@ -217,6 +251,7 @@
           <div class="footer-brand"><span class="brand-icon"><img src="assets/brand-icon.png" width="165" height="165" alt=""></span><span>汽水音乐</span></div>
           <div class="footer-easter"><button class="surprise-button" type="button" data-surprise aria-label="给此刻一点节奏"><svg class="icon surprise-wave" aria-hidden="true"><use href="#icon-wave"/></svg></button><span data-surprise-status role="status" aria-live="polite">给此刻一点节奏</span></div>
           <a class="text-link back-top" href="#home">回到顶部<svg class="icon" aria-hidden="true"><use href="#icon-up"/></svg></a>
+          <p class="model-credit">开场易拉罐为 CC0 模型，无署名要求。</p>
         </footer>
       </div>
     </section>

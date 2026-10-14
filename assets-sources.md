@@ -1,3 +1,13 @@
+# 图片与模型来源
+
+## 开场易拉罐
+
+文件 `dist/assets/soda-can.glb`，无品牌铝罐，带拉环、开口片和通用 “Soda” 标签。许可 CC0，无署名义务。
+
+来源是已取得的 CC0 易拉罐，对应 https://grab3d.com/dl/soda-can.glb 。该直链在当前环境返回 404，使用的是随任务提供的同一 GLB。
+
+未改用 Sketchfab Yanez Designs「Soda Cans」（https://sketchfab.com/3d-models/soda-cans-4e0be610db9646929d8be84491f1a72f），因为下载需要登录。若日后换成该模型，需署名 Yanez Designs。不是可口可乐或其他品牌罐。
+
 # 图片来源
 
 - 汽水音乐桌面截图：用户提供，仅作为功能与品牌参考；本轮已移除页面截图展示与部署素材。
