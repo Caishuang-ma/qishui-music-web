@@ -1,18 +1,12 @@
 # 图片与模型来源
 
-## 开场汽水瓶
+## 开场易拉罐
 
-当前开场是程序化绿色玻璃瓶（`dist/splash.js`，Three.js LatheGeometry），不是品牌瓶型。Sketchfab「Soda Bottle Green」下载需要登录，此环境无法拉取原文件。
+文件 `dist/assets/soda-can.glb`，无品牌铝罐，带拉环、开口片和通用 “Soda” 标签。许可 CC0，无署名义务。
 
-计划替换，署名保留在页脚：
+来源是已取得的 CC0 易拉罐，对应 https://grab3d.com/dl/soda-can.glb 。该直链在当前环境返回 404，使用的是随任务提供的同一 GLB。
 
-- 作者：smart61
-- 名称：Soda Bottle Green
-- 页面：https://sketchfab.com/3d-models/soda-bottle-green-e32733d7941748a49483d6a26be82953
-- 许可：CC BY 4.0，使用时需保留 smart61 与许可链接
-- 放置路径：`dist/assets/soda-bottle-green.glb`，再在 `splash.js` 里改为加载该模型，并保持瓶盖可分离
-
-未使用可口可乐或其他品牌瓶模。易拉罐模型不作为开场主体。
+未改用 Sketchfab Yanez Designs「Soda Cans」（https://sketchfab.com/3d-models/soda-cans-4e0be610db9646929d8be84491f1a72f），因为下载需要登录。若日后换成该模型，需署名 Yanez Designs。不是可口可乐或其他品牌罐。
 
 # 图片来源
 

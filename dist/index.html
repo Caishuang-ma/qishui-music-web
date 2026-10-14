@@ -32,7 +32,8 @@
   <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
     }
   }
   </script>
@@ -42,9 +43,9 @@
   <script src="player.js" defer></script>
 </head>
 <body>
-  <!-- Opening bottle is procedural glass. Planned replacement: Sketchfab "Soda Bottle Green" by smart61, CC BY 4.0.
-       https://sketchfab.com/3d-models/soda-bottle-green-e32733d7941748a49483d6a26be82953
-       Place the GLB at assets/soda-bottle-green.glb when it can be downloaded. -->
+  <!-- Opening can: dist/assets/soda-can.glb, CC0 unbranded aluminum can.
+       Sketchfab Yanez Designs "Soda Cans" needs a login, so it is not the file in use.
+       If that model replaces this one, credit Yanez Designs. -->
   <div class="bottle-splash" id="bottle-splash" role="region" aria-label="开场动画">
     <canvas class="bottle-splash-canvas" aria-hidden="true"></canvas>
     <p class="bottle-splash-hint">点击、滚动或按 Esc 跳过</p>
@@ -250,7 +251,7 @@
           <div class="footer-brand"><span class="brand-icon"><img src="assets/brand-icon.png" width="165" height="165" alt=""></span><span>汽水音乐</span></div>
           <div class="footer-easter"><button class="surprise-button" type="button" data-surprise aria-label="给此刻一点节奏"><svg class="icon surprise-wave" aria-hidden="true"><use href="#icon-wave"/></svg></button><span data-surprise-status role="status" aria-live="polite">给此刻一点节奏</span></div>
           <a class="text-link back-top" href="#home">回到顶部<svg class="icon" aria-hidden="true"><use href="#icon-up"/></svg></a>
-          <p class="model-credit">开场玻璃汽水瓶为程序化占位。替换模型请使用 <a href="https://sketchfab.com/3d-models/soda-bottle-green-e32733d7941748a49483d6a26be82953" target="_blank" rel="noopener noreferrer">Sketchfab「Soda Bottle Green」</a>，作者 smart61，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>。</p>
+          <p class="model-credit">开场易拉罐为 CC0 模型，无署名要求。</p>
         </footer>
       </div>
     </section>

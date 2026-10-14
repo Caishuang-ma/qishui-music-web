@@ -1,13 +1,12 @@
 /**
  * Opening splash for 汽水音乐.
  *
- * The bottle is a procedural green glass stand-in. Sketchfab
- * "Soda Bottle Green" by smart61 (CC BY 4.0) needs a login to download:
- * https://sketchfab.com/3d-models/soda-bottle-green-e32733d7941748a49483d6a26be82953
- * Drop that GLB at assets/soda-bottle-green.glb and keep the smart61 credit.
- * Do not replace this with a branded contour bottle.
+ * The can is dist/assets/soda-can.glb: a CC0 unbranded aluminum soda can
+ * (body, scored opening, pull tab). Sketchfab Yanez Designs "Soda Cans"
+ * needs a login, so it is not the file in use. CC0 needs no attribution.
+ * If that Sketchfab model replaces this GLB, credit Yanez Designs.
  *
- * Three.js is loaded from the import map (jsDelivr). No build step.
+ * Three.js and GLTFLoader come from the import map (jsDelivr). No build step.
  */
 const root = document.documentElement;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -16,14 +15,17 @@ const overlay = document.getElementById('bottle-splash');
 const main = document.querySelector('main');
 const nav = document.querySelector('.nav');
 const skipButton = overlay?.querySelector('.bottle-splash-skip');
+const debugTime = new URLSearchParams(window.location.search).has('splashdebug');
 
 const TIMING = {
-  capPress: 0.42,
-  capLift: 0.58,
-  capLiftDur: 1.05,
-  fizz: 0.92,
-  handoff: 2.7,
+  tabPress: 0.46,
+  tabLift: 0.68,
+  tabDur: 1.02,
+  fizz: 1.02,
+  handoff: 2.75,
 };
+
+const CAN_SCALE = 14;
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 const smoother = (value) => {
@@ -146,26 +148,36 @@ function lockPage() {
   skipButton?.focus({ preventScroll: true });
 }
 
+function loadModel(GLTFLoader) {
+  return new Promise((resolve, reject) => {
+    const loader = new GLTFLoader();
+    loader.load('assets/soda-can.glb', resolve, undefined, reject);
+  });
+}
+
 if (!shouldPlay()) {
   finish();
 } else {
   lockPage();
   bindInput();
-  import('three')
-    .then((THREE) => {
+  Promise.all([
+    import('three'),
+    import('three/addons/loaders/GLTFLoader.js'),
+  ]).then(async ([THREE, loaderMod]) => {
+    if (phase !== 'boot') return;
+    try {
+      const gltf = await loadModel(loaderMod.GLTFLoader);
       if (phase !== 'boot') return;
-      try {
-        startScene(THREE);
-      } catch (error) {
-        finish();
-      }
-    })
-    .catch(() => {
+      startScene(THREE, gltf);
+    } catch (error) {
       finish();
-    });
+    }
+  }).catch(() => {
+    finish();
+  });
 }
 
-function startScene(THREE) {
+function startScene(THREE, gltf) {
   if (phase !== 'boot' || !overlay) return;
   const canvas = overlay.querySelector('canvas');
   if (!canvas) {
@@ -188,42 +200,38 @@ function startScene(THREE) {
   renderer.setClearColor(0x050706, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.12;
+  renderer.toneMappingExposure = 1.18;
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050706);
   scene.environment = buildEnvironment(THREE, renderer);
 
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 40);
-  scene.add(new THREE.AmbientLight(0xf4f7ef, 0.28));
-  scene.add(new THREE.HemisphereLight(0xefffe8, 0x07110c, 0.72));
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 40);
+  scene.add(new THREE.AmbientLight(0xf4f7ef, 0.32));
+  scene.add(new THREE.HemisphereLight(0xf3f7ff, 0x1a140c, 0.7));
 
-  const key = new THREE.DirectionalLight(0xfff6ea, 2.6);
-  key.position.set(3.1, 4.6, 3.4);
+  const key = new THREE.DirectionalLight(0xfff4ea, 2.8);
+  key.position.set(2.4, 4.8, 3.2);
   scene.add(key);
-
-  const rim = new THREE.DirectionalLight(0xb8ff62, 2.4);
-  rim.position.set(-3.4, 2.2, -2.6);
+  const rim = new THREE.DirectionalLight(0xd7ffe8, 2.1);
+  rim.position.set(-3.2, 2.6, -2.2);
   scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xd5e4ff, 0.55);
-  fill.position.set(-0.4, 1.1, 4.2);
+  const fill = new THREE.DirectionalLight(0xd5e4ff, 0.7);
+  fill.position.set(-0.6, 1.4, 4);
   scene.add(fill);
-  const glow = new THREE.PointLight(0x3ef08a, 1.6, 5.2, 2);
-  glow.position.set(0.15, 1.05, 0.85);
-  scene.add(glow);
 
-  const bottle = buildBottle(THREE, renderer);
-  scene.add(bottle.group);
+  const can = rigCan(THREE, gltf);
+  scene.add(can.rig);
 
   const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.8, 0.7),
+    new THREE.PlaneGeometry(1.6, 0.7),
     new THREE.MeshBasicMaterial({ map: makeShadowTexture(THREE), transparent: true, depthWrite: false })
   );
   floor.rotation.x = -Math.PI / 2;
-  floor.position.y = 0.002;
+  floor.position.y = 0.001;
   scene.add(floor);
 
-  const fizz = buildFizz(THREE, bottle.group);
+  const fizz = buildFizz(THREE, can.model, can.mouth);
 
   function resize() {
     const width = overlay.clientWidth || window.innerWidth;
@@ -238,7 +246,6 @@ function startScene(THREE) {
 
   disposeScene = () => {
     window.removeEventListener('resize', onResize);
-    fizz.dispose();
     scene.environment?.dispose?.();
     const seen = new Set();
     scene.traverse((object) => {
@@ -250,10 +257,12 @@ function startScene(THREE) {
       materials.forEach((material) => {
         if (seen.has(material)) return;
         seen.add(material);
-        if (material.map && !seen.has(material.map)) {
-          seen.add(material.map);
-          material.map.dispose();
-        }
+        Object.values(material).forEach((value) => {
+          if (value && value.isTexture && !seen.has(value)) {
+            seen.add(value);
+            value.dispose();
+          }
+        });
         material.dispose();
       });
     });
@@ -291,24 +300,22 @@ function startScene(THREE) {
       const delta = Math.min(0.1, Math.max(0, (now - previous) / 1000));
       previous = now;
       if (phase === 'play' || phase === 'leave') elapsed += delta;
+      if (debugTime) root.dataset.splashTime = elapsed.toFixed(2);
 
-      const intro = smoother(elapsed / 0.85);
+      const intro = smoother(elapsed / 0.8);
       const pose = cameraPose(elapsed, intro);
       camera.position.set(pose.x, pose.y, pose.z);
       camera.lookAt(0, pose.lookY, 0);
 
-      bottle.group.rotation.y = lerp(-0.48, 0.18, smoother(clamp01(elapsed / 3.3)));
-      bottle.group.rotation.z = Math.sin(elapsed * 0.65) * 0.012;
-      bottle.group.position.y = (1 - intro) * -0.16;
+      can.rig.rotation.y = lerp(-1.25, -0.78, smoother(clamp01(elapsed / 3.2)));
+      can.rig.rotation.z = Math.sin(elapsed * 0.6) * 0.012;
+      can.rig.position.y = (1 - intro) * -0.1;
 
-      const cap = capPose(elapsed);
-      bottle.cap.position.y = bottle.capBase + cap.y;
-      bottle.cap.position.x = cap.x;
-      bottle.cap.position.z = cap.z;
-      bottle.cap.rotation.z = cap.tilt;
-      bottle.cap.rotation.y = cap.spin;
+      const open = openPose(elapsed);
+      can.tabPivot.rotation.z = open.tab;
+      can.openingPivot.rotation.z = open.panel;
 
-      fizz.update(elapsed, delta);
+      fizz.update(elapsed);
       if (phase === 'play' && elapsed >= TIMING.handoff) beginExit(false);
       renderer.render(scene, camera);
     } catch (error) {
@@ -321,42 +328,90 @@ function startScene(THREE) {
   function cameraPose(time, intro) {
     const outro = time > TIMING.handoff ? smoother((time - TIMING.handoff) / 0.8) : 0;
     return {
-      x: lerp(1.55, 0.82, intro) * (1 - outro * 0.2),
-      y: lerp(1.2, 1.42, intro) - outro * 0.12,
-      z: lerp(7.5, 6.55, intro) + outro * 0.55,
-      lookY: lerp(1.12, 1.28, intro) - outro * 0.05,
+      x: lerp(1.45, 0.92, intro) * (1 - outro * 0.2),
+      y: lerp(1.15, 1.62, intro) - outro * 0.12,
+      z: lerp(4.35, 3.45, intro) + outro * 0.5,
+      lookY: lerp(0.7, 0.98, intro) - outro * 0.06,
     };
   }
 
-  function capPose(time) {
-    if (time < TIMING.capPress) return { y: 0, x: 0, z: 0, tilt: 0, spin: 0 };
-    if (time < TIMING.capLift) {
-      const press = smoother((time - TIMING.capPress) / (TIMING.capLift - TIMING.capPress));
-      return { y: -0.014 * press, x: 0, z: 0, tilt: 0, spin: 0 };
+  function openPose(time) {
+    if (time < TIMING.tabPress) return { tab: 0, panel: 0 };
+    if (time < TIMING.tabLift) {
+      const press = smoother((time - TIMING.tabPress) / (TIMING.tabLift - TIMING.tabPress));
+      return { tab: -0.14 * press, panel: 0 };
     }
-    const lift = easeOut((time - TIMING.capLift) / TIMING.capLiftDur);
+    const lift = easeOut((time - TIMING.tabLift) / TIMING.tabDur);
+    const panel = easeOut(clamp01((lift - 0.18) / 0.82));
     return {
-      y: -0.014 * (1 - lift) + lift * 0.46,
-      x: lift * 0.2,
-      z: lift * -0.05,
-      tilt: lift * 0.72,
-      spin: lift * 1.15,
+      tab: -0.14 * (1 - lift) + lift * 1.22,
+      panel: -panel * 1.35,
     };
   }
 
   raf = requestAnimationFrame(frame);
 }
 
+function rigCan(THREE, gltf) {
+  const model = gltf.scene;
+  const tab = model.getObjectByName('soda-can_tab');
+  const opening = model.getObjectByName('soda-can_opening');
+  if (!tab || !opening) throw new Error('Soda can is missing its pull tab');
+
+  model.traverse((object) => {
+    if (!object.isMesh || !object.material) return;
+    const materials = [].concat(object.material);
+    materials.forEach((material) => {
+      material.envMapIntensity = 1.25;
+      if (material.metalness == null) material.metalness = 1;
+    });
+  });
+
+  const tabBox = new THREE.Box3().setFromObject(tab);
+  const openBox = new THREE.Box3().setFromObject(opening);
+  const tabPivot = attachPivot(THREE, tab, new THREE.Vector3(0.0012, tabBox.min.y, 0));
+  const openingPivot = attachPivot(THREE, opening, new THREE.Vector3(openBox.min.x, openBox.max.y, 0));
+
+  const mouthWidth = openBox.max.x - openBox.min.x;
+  const mouthDepth = openBox.max.z - openBox.min.z;
+  const mouth = new THREE.Vector3(
+    (openBox.min.x + openBox.max.x) / 2,
+    openBox.max.y + 0.0015,
+    (openBox.min.z + openBox.max.z) / 2
+  );
+  const hole = new THREE.Mesh(
+    new THREE.CircleGeometry(1, 28),
+    new THREE.MeshStandardMaterial({ color: 0x070809, roughness: 0.72, metalness: 0.15 })
+  );
+  hole.rotation.x = -Math.PI / 2;
+  hole.scale.set(mouthWidth * 0.46, mouthDepth * 0.46, 1);
+  hole.position.set(mouth.x, openBox.min.y - 0.0002, mouth.z);
+  openingPivot.parent.add(hole);
+
+  const rig = new THREE.Group();
+  rig.scale.setScalar(CAN_SCALE);
+  rig.add(model);
+  return { rig, model, tabPivot, openingPivot, mouth };
+}
+
+function attachPivot(THREE, object, point) {
+  const pivot = new THREE.Group();
+  object.parent.add(pivot);
+  pivot.position.copy(point);
+  pivot.attach(object);
+  return pivot;
+}
+
 function buildEnvironment(THREE, renderer) {
   const envScene = new THREE.Scene();
-  envScene.background = new THREE.Color(0x08140f);
+  envScene.background = new THREE.Color(0x101418);
   const geo = new THREE.PlaneGeometry(8, 8);
   const panels = [
-    { color: 0xf5fff2, pos: [0, 5.2, 0], rot: [-Math.PI / 2, 0, 0] },
-    { color: 0xffffff, pos: [4.6, 2.4, 2.2], rot: [0, -1.35, 0] },
-    { color: 0xd4ff6a, pos: [-4.5, 2.1, -0.6], rot: [0, 1.25, 0] },
-    { color: 0x10281c, pos: [0, 1.4, -5], rot: [0, 0, 0] },
-    { color: 0x07110c, pos: [0, -2.4, 0.4], rot: [Math.PI / 2, 0, 0] },
+    { color: 0xf7f8f4, pos: [0, 5.2, 0], rot: [-Math.PI / 2, 0, 0] },
+    { color: 0xffffff, pos: [4.6, 2.6, 2.4], rot: [0, -1.35, 0] },
+    { color: 0xd8ffe4, pos: [-4.4, 2.2, -0.4], rot: [0, 1.2, 0] },
+    { color: 0x1a2228, pos: [0, 1.2, -5], rot: [0, 0, 0] },
+    { color: 0x0c1012, pos: [0, -2.4, 0.2], rot: [Math.PI / 2, 0, 0] },
   ];
   panels.forEach((panel) => {
     const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: panel.color, side: THREE.DoubleSide }));
@@ -372,209 +427,19 @@ function buildEnvironment(THREE, renderer) {
   return map;
 }
 
-function buildBottle(THREE, renderer) {
-  const group = new THREE.Group();
-  const profile = [
-    [0.001, 0],
-    [0.16, 0.02],
-    [0.34, 0.06],
-    [0.46, 0.12],
-    [0.515, 0.22],
-    [0.538, 0.4],
-    [0.54, 1.18],
-    [0.52, 1.36],
-    [0.4, 1.5],
-    [0.26, 1.62],
-    [0.175, 1.74],
-    [0.152, 1.92],
-    [0.16, 2.04],
-    [0.198, 2.1],
-    [0.172, 2.15],
-  ].map(([radius, y]) => new THREE.Vector2(radius, y));
-
-  const glass = new THREE.Mesh(
-    new THREE.LatheGeometry(profile, 72),
-    new THREE.MeshPhysicalMaterial({
-      color: 0xf3fff6,
-      metalness: 0,
-      roughness: 0.045,
-      transmission: 1,
-      thickness: 0.72,
-      ior: 1.48,
-      attenuationColor: new THREE.Color(0x12a84e),
-      attenuationDistance: 0.26,
-      clearcoat: 1,
-      clearcoatRoughness: 0.06,
-      envMapIntensity: 1.2,
-      transparent: true,
-    })
-  );
-  group.add(glass);
-
-  const liquidProfile = [
-    [0.001, 0.05],
-    [0.28, 0.08],
-    [0.4, 0.16],
-    [0.445, 0.36],
-    [0.45, 1.12],
-    [0.4, 1.2],
-    [0.28, 1.24],
-    [0.001, 1.25],
-  ].map(([radius, y]) => new THREE.Vector2(radius, y));
-  const liquid = new THREE.Mesh(
-    new THREE.LatheGeometry(liquidProfile, 48),
-    new THREE.MeshStandardMaterial({
-      color: 0x1fce6c,
-      roughness: 0.22,
-      metalness: 0.02,
-      emissive: 0x064626,
-      emissiveIntensity: 0.45,
-    })
-  );
-  group.add(liquid);
-
-  const surface = new THREE.Mesh(
-    new THREE.CircleGeometry(0.4, 40),
-    new THREE.MeshStandardMaterial({
-      color: 0x8dffb4,
-      roughness: 0.12,
-      metalness: 0.05,
-      emissive: 0x147845,
-      emissiveIntensity: 0.55,
-    })
-  );
-  surface.rotation.x = -Math.PI / 2;
-  surface.position.y = 1.245;
-  group.add(surface);
-
-  const labelTexture = makeLabelTexture(THREE);
-  const label = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.552, 0.552, 0.52, 64, 1, true),
-    new THREE.MeshStandardMaterial({
-      map: labelTexture,
-      roughness: 0.68,
-      metalness: 0.02,
-      side: THREE.FrontSide,
-    })
-  );
-  label.position.y = 0.78;
-  group.add(label);
-  if (document.fonts?.ready) {
-    document.fonts.ready.then(() => {
-      paintLabel(labelTexture.image.getContext('2d'), labelTexture.image.width, labelTexture.image.height);
-      labelTexture.needsUpdate = true;
-    });
-  }
-  labelTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-  const mouth = new THREE.Mesh(
-    new THREE.TorusGeometry(0.105, 0.02, 10, 32),
-    new THREE.MeshStandardMaterial({ color: 0x062415, roughness: 0.55, metalness: 0.08 })
-  );
-  mouth.rotation.x = Math.PI / 2;
-  mouth.position.y = 2.12;
-  group.add(mouth);
-
-  const metal = new THREE.MeshStandardMaterial({
-    color: 0xd5dbe1,
-    metalness: 1,
-    roughness: 0.24,
-    envMapIntensity: 1.25,
-  });
-  const cap = new THREE.Group();
-  const skirt = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.214, 0.078, 21, 1, false), metal);
-  skirt.position.y = 0.04;
-  cap.add(skirt);
-  const dome = new THREE.Mesh(new THREE.SphereGeometry(0.188, 32, 18, 0, Math.PI * 2, 0, Math.PI * 0.48), metal);
-  dome.position.y = 0.072;
-  cap.add(dome);
-  const seal = new THREE.Mesh(
-    new THREE.CircleGeometry(0.09, 28),
-    new THREE.MeshStandardMaterial({ color: 0xc4ff3b, roughness: 0.38, metalness: 0.08, emissive: 0x6ea318, emissiveIntensity: 0.18 })
-  );
-  seal.rotation.x = -Math.PI / 2;
-  seal.position.y = 0.248;
-  cap.add(seal);
-  const capBase = 2.128;
-  cap.position.y = capBase;
-  group.add(cap);
-
-  const bubbleGeo = new THREE.SphereGeometry(0.016, 10, 10);
-  const bubbleMat = new THREE.MeshStandardMaterial({
-    color: 0xf4fff6,
-    emissive: 0xd8ffe4,
-    emissiveIntensity: 0.35,
-    roughness: 0.15,
-    transparent: true,
-    opacity: 0.75,
-  });
-  const bubbles = Array.from({ length: 12 }, () => {
-    const mesh = new THREE.Mesh(bubbleGeo, bubbleMat);
-    group.add(mesh);
-    return {
-      mesh,
-      angle: Math.random() * Math.PI * 2,
-      radius: 0.08 + Math.random() * 0.28,
-      speed: 0.08 + Math.random() * 0.16,
-      offset: Math.random(),
-    };
-  });
-  group.userData.tickBubbles = (time) => {
-    bubbles.forEach((bubble) => {
-      const cycle = (time * bubble.speed + bubble.offset) % 1;
-      const y = 0.28 + cycle * 0.9;
-      const radius = Math.min(bubble.radius, 0.36);
-      bubble.mesh.position.set(Math.cos(bubble.angle + time * 0.35) * radius, y, Math.sin(bubble.angle + time * 0.35) * radius);
-      const fade = Math.sin(cycle * Math.PI);
-      bubble.mesh.scale.setScalar(0.45 + fade * 0.9);
-    });
-  };
-
-  return { group, cap, capBase };
-}
-
-function makeLabelTexture(THREE) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 256;
-  paintLabel(canvas.getContext('2d'), canvas.width, canvas.height);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.ClampToEdgeWrapping;
-  return texture;
-}
-
-function paintLabel(ctx, width, height) {
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = '#f4f7ee';
-  ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = '#00d76f';
-  ctx.fillRect(0, 0, width, 16);
-  ctx.fillRect(0, height - 16, width, 16);
-  ctx.fillStyle = '#061109';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = '700 96px "Noto Sans SC", "PingFang SC", sans-serif';
-  ctx.fillText('汽水', width / 2, height * 0.44);
-  ctx.font = '600 34px "Space Grotesk", sans-serif';
-  ctx.fillStyle = '#1a5c34';
-  ctx.fillText('QISHUI', width / 2, height * 0.72);
-}
-
-function buildFizz(THREE, bottle) {
+function buildFizz(THREE, parent, origin) {
   const spriteTexture = makeMistTexture(THREE);
   const neck = new THREE.Group();
-  neck.position.set(0, 2.18, 0);
-  bottle.add(neck);
+  neck.position.copy(origin);
+  parent.add(neck);
 
-  const puffs = Array.from({ length: 22 }, () => {
+  const puffs = Array.from({ length: 18 }, () => {
     const material = new THREE.SpriteMaterial({
       map: spriteTexture,
-      color: 0xf3fff4,
+      color: 0xf4fff6,
       transparent: true,
       opacity: 0,
       depthWrite: false,
-      blending: THREE.NormalBlending,
     });
     const sprite = new THREE.Sprite(material);
     neck.add(sprite);
@@ -582,73 +447,69 @@ function buildFizz(THREE, bottle) {
       sprite,
       material,
       seed: Math.random() * 10,
-      speed: 0.28 + Math.random() * 0.38,
-      drift: 0.05 + Math.random() * 0.16,
-      scale: 0.16 + Math.random() * 0.28,
+      speed: 0.35 + Math.random() * 0.4,
+      drift: 0.004 + Math.random() * 0.012,
+      scale: 0.01 + Math.random() * 0.012,
     };
   });
 
-  const bubbleTexture = spriteTexture;
+  const count = 42;
+  const positions = new Float32Array(count * 3);
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   const pointsMat = new THREE.PointsMaterial({
     color: 0xf7fff8,
-    map: bubbleTexture,
-    size: 0.055,
+    map: spriteTexture,
+    size: 0.007,
     transparent: true,
     opacity: 0,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     sizeAttenuation: true,
   });
-  const count = 56;
-  const positions = new Float32Array(count * 3);
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   const points = new THREE.Points(geometry, pointsMat);
   neck.add(points);
   const specks = Array.from({ length: count }, () => ({
     angle: Math.random() * Math.PI * 2,
-    speed: 0.45 + Math.random() * 0.7,
+    speed: 0.45 + Math.random() * 0.65,
     offset: Math.random(),
-    spread: 0.012 + Math.random() * 0.05,
+    spread: 0.0015 + Math.random() * 0.004,
   }));
 
   function amount(time) {
     if (time < TIMING.fizz) return 0;
     const local = time - TIMING.fizz;
-    const rise = smoother(local / 0.28);
-    const hold = local < 1.15 ? 1 : Math.max(0, 1 - (local - 1.15) / 0.85);
-    const burst = local < 0.22 ? 0.35 : 0;
-    return Math.min(1, rise * hold + burst);
+    const rise = smoother(local / 0.25);
+    const hold = local < 1.05 ? 1 : Math.max(0, 1 - (local - 1.05) / 0.7);
+    return Math.min(1, rise * hold);
   }
 
   return {
     update(time) {
       const level = amount(time);
-      bottle.userData.tickBubbles?.(time);
       puffs.forEach((puff) => {
         const cycle = (time * puff.speed + puff.seed) % 1;
-        const rise = cycle ** 0.85 * 0.95;
+        const rise = cycle ** 0.8 * 0.055;
         puff.sprite.position.set(
-          Math.sin(time * 1.15 + puff.seed) * puff.drift * (0.25 + rise),
+          Math.sin(time * 1.4 + puff.seed) * puff.drift * (0.4 + rise * 18),
           rise,
-          Math.cos(time * 0.95 + puff.seed * 1.3) * puff.drift * (0.25 + rise)
+          Math.cos(time * 1.1 + puff.seed) * puff.drift * (0.4 + rise * 18)
         );
         const fade = Math.sin(Math.min(1, cycle) * Math.PI);
-        puff.sprite.scale.setScalar(puff.scale * (0.35 + rise * 1.8));
-        puff.material.opacity = level * fade * 0.42;
+        puff.sprite.scale.setScalar(puff.scale * (0.45 + rise * 28));
+        puff.material.opacity = level * fade * 0.5;
       });
       specks.forEach((speck, index) => {
         const cycle = (time * speck.speed + speck.offset) % 1;
-        const rise = cycle * 0.72;
-        const radius = speck.spread * (1 + rise * 3.2);
-        positions[index * 3] = Math.cos(speck.angle + time) * radius;
+        const rise = cycle * 0.048;
+        const radius = speck.spread * (1 + rise * 40);
+        positions[index * 3] = Math.cos(speck.angle + time * 2) * radius;
         positions[index * 3 + 1] = rise;
-        positions[index * 3 + 2] = Math.sin(speck.angle + time * 0.8) * radius;
+        positions[index * 3 + 2] = Math.sin(speck.angle + time * 1.4) * radius;
       });
       geometry.attributes.position.needsUpdate = true;
-      pointsMat.opacity = level * 0.85;
+      pointsMat.opacity = level * 0.9;
     },
-    dispose() {},
   };
 }
 
@@ -658,7 +519,7 @@ function makeShadowTexture(THREE) {
   canvas.height = 128;
   const ctx = canvas.getContext('2d');
   const gradient = ctx.createRadialGradient(64, 64, 8, 64, 64, 62);
-  gradient.addColorStop(0, 'rgba(0,0,0,0.48)');
+  gradient.addColorStop(0, 'rgba(0,0,0,0.5)');
   gradient.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 128, 128);
@@ -674,9 +535,8 @@ function makeMistTexture(THREE) {
   const ctx = canvas.getContext('2d');
   const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
   gradient.addColorStop(0, 'rgba(255,255,255,0.95)');
-  gradient.addColorStop(0.28, 'rgba(226,255,214,0.55)');
-  gradient.addColorStop(0.62, 'rgba(186,255,196,0.16)');
-  gradient.addColorStop(1, 'rgba(186,255,196,0)');
+  gradient.addColorStop(0.3, 'rgba(230,255,236,0.5)');
+  gradient.addColorStop(1, 'rgba(230,255,236,0)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 128, 128);
   const texture = new THREE.CanvasTexture(canvas);
