@@ -1,3 +1,19 @@
+# 图片与模型来源
+
+## 开场汽水瓶
+
+当前开场是程序化绿色玻璃瓶（`dist/splash.js`，Three.js LatheGeometry），不是品牌瓶型。Sketchfab「Soda Bottle Green」下载需要登录，此环境无法拉取原文件。
+
+计划替换，署名保留在页脚：
+
+- 作者：smart61
+- 名称：Soda Bottle Green
+- 页面：https://sketchfab.com/3d-models/soda-bottle-green-e32733d7941748a49483d6a26be82953
+- 许可：CC BY 4.0，使用时需保留 smart61 与许可链接
+- 放置路径：`dist/assets/soda-bottle-green.glb`，再在 `splash.js` 里改为加载该模型，并保持瓶盖可分离
+
+未使用可口可乐或其他品牌瓶模。易拉罐模型不作为开场主体。
+
 # 图片来源
 
 - 汽水音乐桌面截图：用户提供，仅作为功能与品牌参考；本轮已移除页面截图展示与部署素材。

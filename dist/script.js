@@ -22,7 +22,8 @@
     let activeChapter = '';
     let featuresVisible = false;
 
-    const pointerMotionAllowed = () => !reducedMotion.matches && finePointer.matches && !document.hidden;
+    const splashBlocking = () => root.classList.contains('splash-active');
+    const pointerMotionAllowed = () => !reducedMotion.matches && finePointer.matches && !document.hidden && !splashBlocking();
     const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
 
     function updateModeVisibility() {
@@ -94,14 +95,14 @@
         const distance = Math.max(1, root.scrollHeight - window.innerHeight);
         const progress = clamp(window.scrollY / distance, 0, 1);
         const moving = !reducedMotion.matches;
-        siteAtmosphere.style.setProperty('--field-y', moving ? `${(progress * 80 - 40).toFixed(2)}px` : '0px');
-        siteAtmosphere.style.setProperty('--field-turn', moving ? `${(progress * 12).toFixed(2)}deg` : '0deg');
+        siteAtmosphere.style.setProperty('--field-y', moving ? `${(progress * 28 - 14).toFixed(2)}px` : '0px');
+        siteAtmosphere.style.setProperty('--field-turn', moving ? `${(progress * 4).toFixed(2)}deg` : '0deg');
       }
       if (sceneGallery) {
         const rect = sceneGallery.getBoundingClientRect();
         const visible = rect.bottom > 0 && rect.top < window.innerHeight;
         const distance = (rect.top + rect.bottom) / 2 - window.innerHeight / 2;
-        sceneGallery.style.setProperty('--gallery-tilt', enabled && visible ? `${clamp(distance * 0.015, -6, 6).toFixed(2)}deg` : '0deg');
+        sceneGallery.style.setProperty('--gallery-tilt', enabled && visible ? `${clamp(distance * 0.006, -2.5, 2.5).toFixed(2)}deg` : '0deg');
       }
       parallaxElements.forEach(element => {
         if (!enabled) {
@@ -111,7 +112,7 @@
         const rect = element.getBoundingClientRect();
         if (rect.bottom < 0 || rect.top > window.innerHeight) return;
         const distance = (rect.top + rect.bottom) / 2 - window.innerHeight / 2;
-        element.style.setProperty('--py', `${clamp(distance * 0.06, -32, 32).toFixed(2)}px`);
+        element.style.setProperty('--py', `${clamp(distance * 0.02, -12, 12).toFixed(2)}px`);
       });
       if (!canObserve) {
         atmosphereElements.forEach(element => {
@@ -235,8 +236,8 @@
         }
         const x = window.innerWidth ? coordinates.x / window.innerWidth * 2 - 1 : 0;
         const y = window.innerHeight ? coordinates.y / window.innerHeight * 2 - 1 : 0;
-        siteAtmosphere.style.setProperty('--ambient-x', `${(clamp(x, -1, 1) * 20).toFixed(2)}px`);
-        siteAtmosphere.style.setProperty('--ambient-y', `${(clamp(y, -1, 1) * 14).toFixed(2)}px`);
+        siteAtmosphere.style.setProperty('--ambient-x', `${(clamp(x, -1, 1) * 4).toFixed(2)}px`);
+        siteAtmosphere.style.setProperty('--ambient-y', `${(clamp(y, -1, 1) * 3).toFixed(2)}px`);
       }
 
       window.addEventListener('pointermove', event => {
@@ -369,6 +370,11 @@
         queuePageUpdate();
       }
     }
+
+    window.addEventListener('qishui:splash-settled', () => {
+      resetPointerMotion();
+      queuePageUpdate();
+    });
 
     document.addEventListener('visibilitychange', updateVisibility);
     updateVisibility();
