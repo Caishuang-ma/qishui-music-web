@@ -1,19 +1,19 @@
 # 汽水音乐 · Web 设计规范
 
-状态：本轮最终方案，依据当前页面实现同步。日期：2026-10-11。仅做电脑端；一个连续落地页、四个主要屏幕、无二级页面。本文件覆盖原规范，不保留旧草案或备份。本文记录最终设计与交互，不代替独立页面验收记录。
+状态：2026-10-15 炭黑手绘。仅做电脑端；一个连续落地页、四个主要屏幕、无二级页面。交互仍是四屏、圆环手势、三种听歌模式和官方 MV 弹窗。颜色、按钮、开场和插画以 `dist/styles.css` 与 `dist/splash.js` 为准。后文若仍出现荧光绿实心按钮、difference 混合或绿色票券，那是上一版画法，不再作为当前外观。
 
 ## 1. Visual Theme & Atmosphere
 
-**Style**：Dark Editorial / Music Poster。黑底、荧光绿、巨型中文品牌字、轻导航、真实摄影与三维层次。全页是一张连续呼吸的音乐海报。
+**Style**：Charcoal doodle。近黑炭底、白色不完美勾线、斜向笔触填色。亮绿 `#6ae034` 用在汽水罐、选中场景和少量标记上，不铺满按钮。正文是柔和灰，主按钮是深灰胶囊配白字。首页垂直居中：手绘罐、品牌名、一句副标题、下载按钮。
 
-**Interaction Tier**：沿用用户选定的 L2，按用户最新要求强化电脑端三维与手势反馈。使用 CSS、原生 JavaScript、IntersectionObserver 与 requestAnimationFrame，无新增动画库或 WebGL 依赖。
+**Interaction Tier**：CSS、原生 JavaScript、IntersectionObserver 与 requestAnimationFrame。开场是同一只手绘 SVG 罐：线稿画出、绿色笔触填上、拉环掀起、左侧裂开并溅出。桌面 ≥1024 且未开启减少动态时约 3 秒，点击、滚动或 Esc 跳过。减少动态时直接进入静态罐和标题。没有 WebGL，也没有第三方罐模型。
 
 | 屏幕 / 锚点 | 主信息 | 最终构图与交互 |
 |---|---|---|
-| 01 / #home | 汽水音乐，让喜欢响起来 | 巨型品牌字、非对称短句、底部官方下载 CTA；文字遮罩入场，全局声场背景贯穿后续区域 |
+| 01 / #home | 汽水音乐，让喜欢响起来 | 手绘汽水罐居中，品牌字与副标题垂直排列，深灰胶囊通往官方下载；减少动态时跳过开场 |
 | 02 / #discover | 每一刻，都有你的节奏 | 宣言带、八个场景标签、倾斜三维摄影圆环；双指上下 / 左右滑动、单一主指针上下 / 左右拖动、左右按钮与键盘切换 |
 | 03 / #features | 喜欢，不止一种方式 | 默认 / 熟悉 / 新鲜三模式，原生唱片、摄影封套与收藏气泡；唱片中心唯一播放按钮打开完整官方 MV 弹窗，右上方显示歌曲信息 |
-| 04 / #download | 把音乐，带进生活 | 延续黑底与荧光绿标题；立体品牌物体、轨道线、三张生活摄影、绿色下载票券与页脚声波彩蛋 |
+| 04 / #download | 把音乐，带进生活 | 炭底、亮绿第二行标题、手绘罐、勾边生活摄影、深灰票券里的白色胶囊按钮，页脚保留声波彩蛋 |
 
 所有屏底页数标记已删除，第四屏保持黑底。第三屏以独立模式视觉与官方视频体验表达产品能力，不展示桌面产品截图。用户截图只作为真实产品功能、场景和听歌模式的内容依据。
 
@@ -25,34 +25,11 @@
 
 ## 2. Color Palette & Roles
 
-所有颜色字面量集中于变量，组件引用变量。主体保持品牌绿；熟悉模式用暖杏色，新鲜模式用浅蓝色，仅用于唱片标签、封套文字与收藏心形的模式反馈。照片保留原有色彩。
+颜色字面量集中于变量。底是炭黑 `#101214`，线是暖白 `#f4f1ea`，字是柔和灰，亮绿只做插画和选中标记。主按钮是 `#2a2e33` 胶囊、白字。熟悉模式仍用暖杏色，新鲜模式仍用浅蓝，只出现在唱片中心、封套字和收藏心形。照片保留原有色彩，外框改成白色手绘边。
 
-```css
-:root {
-  --bg: #050706; --surface: #111713; --surface-alt: #19221c; --surface-hover: #222f26;
-  --border: #314337; --border-hover: #a8f43b; --text: #f3f5ed; --text-secondary: #b8c1b7;
-  --text-tertiary: #8e9d90; --accent: #c4ff3b; --accent-hover: #d6ff79; --accent-active: #a8e52b;
-  --brand-green: #00d76f; --ink: #061109; --on-accent-secondary: #243b12; --transparent: transparent;
-  --mode-warm: #f4bd72; --mode-cool: #a8cfff; --mode-warm-rgb: 244,189,114; --mode-cool-rgb: 168,207,255;
-  --success: #57ed98; --error: #ff9399; --warning: #ffe28a;
-  --bg-rgb: 5,7,6; --surface-rgb: 17,23,19; --surface-alt-rgb: 25,34,28; --surface-hover-rgb: 34,47,38;
-  --border-rgb: 49,67,55; --border-hover-rgb: 168,244,59; --text-rgb: 243,245,237;
-  --text-secondary-rgb: 184,193,183; --text-tertiary-rgb: 142,157,144; --accent-rgb: 196,255,59;
-  --accent-hover-rgb: 214,255,121; --accent-active-rgb: 168,229,43; --brand-green-rgb: 0,215,111;
-  --ink-rgb: 6,17,9; --on-accent-secondary-rgb: 36,59,18; --success-rgb: 87,237,152;
-  --error-rgb: 255,147,153; --warning-rgb: 255,226,138;
-  --font-body: 'Noto Sans SC','Space Grotesk','PingFang SC','Microsoft YaHei',sans-serif;
-  --font-display: 'Noto Sans SC','Space Grotesk','PingFang SC','Microsoft YaHei',sans-serif;
-  --font-latin: 'Space Grotesk','Noto Sans SC',sans-serif;
-  --safe: clamp(24px,2.78vw,56px); --gap: 24px; --container: 1600px; --radius: 14px;
-  --ease: cubic-bezier(.16,1,.3,1);
-  --shadow-card: 0 18px 42px rgba(var(--ink-rgb),.35);
-  --shadow-product: 0 28px 70px rgba(var(--ink-rgb),.55);
-  --shadow-accent: 0 0 0 1px rgba(var(--accent-rgb),.25);
-}
-```
+当前主色：`--bg #101214`，`--text #f4f1ea`，`--text-secondary #9b9ea3`，`--accent #6ae034`，`--stroke #f4f1ea`，`--button #2a2e33`。完整变量表在 `dist/styles.css` 的 `:root`。
 
-黑底上的主文字使用 --text，正文使用 --text-secondary；荧光绿按钮或下载票券使用 --ink。全局曲线使用 mix-blend-mode:difference；内容层在背景之上，保持清晰对比。
+主文字使用 --text，正文使用 --text-secondary。背景是稀疏涂鸦线，不用 difference 混合。内容层在背景之上。
 
 ## 3. Typography Rules
 
@@ -64,8 +41,8 @@ h1,h2,h3 { font-family: var(--font-display); line-height: 1.7; letter-spacing: .
 
 | 角色 | 电脑端字号 | 字重 / 行高 |
 |---|---|---|
-| Hero H1 | clamp(104px,17.4vw,252px) | 900 / 1.7 |
-| Hero 副标题 | clamp(32px,3.6vw,52px) | 700 / 1.7 |
+| Hero H1 | clamp(72px,8vw,116px) | 800 / 1.12，居中，下方一条绿色涂鸦线 |
+| Hero 副标题 | clamp(22px,2.2vw,30px) | 500 / 1.5，灰色，居中 |
 | 音乐场景 H2 | clamp(36px,4.1vw,62px) | 800 / 1.7 |
 | 模式 H2 | clamp(40px,4.4vw,64px) | 800 / 1.7 |
 | 下载 H2 | clamp(72px,6.4vw,96px) | 900 / 1.7，字距 .02em |
@@ -392,7 +369,7 @@ CSS + 原生JavaScript；页面、背景与模式交互由 script.js 管理，�
 ### 背景与入场CSS
 
 ```css
-.site-atmosphere { --ambient-x: 0px; --ambient-y: 0px; position: fixed; inset: 0; z-index: 2; overflow: clip; pointer-events: none; mix-blend-mode: difference; }
+.site-atmosphere { position: fixed; inset: 0; z-index: 2; overflow: clip; pointer-events: none; }
 .ambient-frame { position: absolute; inset: -10%; translate: 0 var(--field-y,0px); rotate: var(--field-turn,0deg); transition: rotate .8s linear; }
 .ambient-halo { position: absolute; inset: -20%; background: radial-gradient(ellipse at 75% 65%,rgba(var(--brand-green-rgb),.1),var(--transparent) 58%); }
 .ambient-drift { translate: var(--ambient-x,0px) var(--ambient-y,0px); position: absolute; inset: -12%; animation: field-drift 18s ease-in-out infinite; animation-play-state: paused; }
@@ -538,4 +515,4 @@ CSS + 原生JavaScript；页面、背景与模式交互由 script.js 管理，�
 }
 ```
 
-四个签名时刻为巨型品牌字与全局声场 → 跟手八卡圆环 → 模式唱片与可见官方MV → 黑底品牌物体与绿色下载票券。规范以当前页面为准；测试记录独立维护，不在此虚构验证结果。
+四个签名时刻为手绘汽水罐开场与居中品牌字 → 跟手八卡圆环 → 模式唱片与可见官方MV → 炭底手绘罐与深灰下载票券。规范以当前页面为准；测试记录独立维护，不在此虚构验证结果。

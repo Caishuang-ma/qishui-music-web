@@ -94,8 +94,8 @@
         const distance = Math.max(1, root.scrollHeight - window.innerHeight);
         const progress = clamp(window.scrollY / distance, 0, 1);
         const moving = !reducedMotion.matches;
-        siteAtmosphere.style.setProperty('--field-y', moving ? `${(progress * 80 - 40).toFixed(2)}px` : '0px');
-        siteAtmosphere.style.setProperty('--field-turn', moving ? `${(progress * 12).toFixed(2)}deg` : '0deg');
+        siteAtmosphere.style.setProperty('--field-y', moving ? `${(progress * 28 - 14).toFixed(2)}px` : '0px');
+        siteAtmosphere.style.setProperty('--field-turn', moving ? `${(progress * 4).toFixed(2)}deg` : '0deg');
       }
       if (sceneGallery) {
         const rect = sceneGallery.getBoundingClientRect();
@@ -235,8 +235,8 @@
         }
         const x = window.innerWidth ? coordinates.x / window.innerWidth * 2 - 1 : 0;
         const y = window.innerHeight ? coordinates.y / window.innerHeight * 2 - 1 : 0;
-        siteAtmosphere.style.setProperty('--ambient-x', `${(clamp(x, -1, 1) * 20).toFixed(2)}px`);
-        siteAtmosphere.style.setProperty('--ambient-y', `${(clamp(y, -1, 1) * 14).toFixed(2)}px`);
+        siteAtmosphere.style.setProperty('--ambient-x', `${(clamp(x, -1, 1) * 5).toFixed(2)}px`);
+        siteAtmosphere.style.setProperty('--ambient-y', `${(clamp(y, -1, 1) * 3).toFixed(2)}px`);
       }
 
       window.addEventListener('pointermove', event => {
